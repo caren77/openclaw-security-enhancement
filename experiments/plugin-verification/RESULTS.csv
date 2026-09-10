@@ -1,0 +1,13 @@
+run_id,condition,tamper_type,plugin_discovered,signature_present,trusted_key_found,verification_result,rejection_reason,plugin_module_loaded,execution_marker_created,audit_verified,audit_rejected,result,error
+baseline-source-1,baseline,source,true,true,false,DISABLED,,true,true,false,false,PASS,
+baseline-source-2,baseline,source,true,true,false,DISABLED,,true,true,false,false,PASS,
+baseline-source-3,baseline,source,true,true,false,DISABLED,,true,true,false,false,PASS,
+hardened-source-1,hardened,source,true,true,true,REJECTED,invalid_signature,false,false,false,true,PASS,plugin load failed: fixture-plugin: plugin trust verification failed: invalid_signature
+hardened-source-2,hardened,source,true,true,true,REJECTED,invalid_signature,false,false,false,true,PASS,plugin load failed: fixture-plugin: plugin trust verification failed: invalid_signature
+hardened-source-3,hardened,source,true,true,true,REJECTED,invalid_signature,false,false,false,true,PASS,plugin load failed: fixture-plugin: plugin trust verification failed: invalid_signature
+baseline-manifest-1,baseline,manifest,true,true,false,DISABLED,,true,true,false,false,PASS,
+baseline-manifest-2,baseline,manifest,true,true,false,DISABLED,,true,true,false,false,PASS,
+baseline-manifest-3,baseline,manifest,true,true,false,DISABLED,,true,true,false,false,PASS,
+hardened-manifest-1,hardened,manifest,true,true,true,REJECTED,invalid_signature,false,false,false,true,PASS,plugin load failed: fixture-plugin: plugin trust verification failed: invalid_signature
+hardened-manifest-2,hardened,manifest,true,true,true,REJECTED,invalid_signature,false,false,false,true,PASS,plugin load failed: fixture-plugin: plugin trust verification failed: invalid_signature
+hardened-manifest-3,hardened,manifest,true,true,true,REJECTED,invalid_signature,false,false,false,true,PASS,plugin load failed: fixture-plugin: plugin trust verification failed: invalid_signature
