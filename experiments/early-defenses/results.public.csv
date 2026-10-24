@@ -1,0 +1,21 @@
+test_id,defense,status,return_code,duration_s
+AR-01,Audit Log + Versioned Rollback,PASS,0,9.145637035369873
+AR-02,Audit Log + Versioned Rollback,PASS,0,15.896856784820557
+DV-01,Trusted Developer Verification,PASS,,
+DV-01-E2E,Trusted Developer Verification E2E,PASS,0,12.961160898208618
+DV-02,Trusted Developer Verification,PASS,,
+DV-02-E2E,Trusted Developer Verification E2E,PASS,0,13.688886880874634
+DV-03,Trusted Developer Verification,PASS,,
+DV-03-E2E,Trusted Developer Verification E2E,REVIEW,0,13.502426862716675
+IC-01,Policy/Plugin Integrity Check,REVIEW,0,13.17429804801941
+IC-02,Policy/Plugin Integrity Check,REVIEW,0,13.052027940750122
+IC-03,Policy/Plugin Integrity Check,PASS,0,9.910387992858887
+PL-01,Plugin Allowlist + Signature,PASS,,
+PL-02,Plugin Allowlist + Signature,PASS,,
+PL-03,Plugin Allowlist + Signature,PASS,,
+RO-01,Read-only Policy Files,PASS,0,9.836380958557129
+RO-02,Read-only Policy Files,ERROR,124,56.03658628463745
+RO-03,Read-only Policy Files,PASS,0,31.133888006210327
+SB-01,Plugin Sandbox + Least Privilege,FAIL,0,11.333266973495483
+SB-02,Plugin Sandbox + Least Privilege,FAIL,0,12.120296001434326
+SB-03,Plugin Sandbox + Least Privilege,FAIL,0,36.96496295928955

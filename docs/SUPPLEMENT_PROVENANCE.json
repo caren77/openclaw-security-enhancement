@@ -1,0 +1,15 @@
+{
+  "base": "090cb491227e45cdbdc0a65ea2718c8fe62461c9",
+  "files": [
+    {
+      "path": "patches/experimental-sandbox-paths.patch",
+      "sha256": "eddcd06eecdc9b66276d30526d3a15049cb98214340de766b506e05867a83a77",
+      "transformation": "selected-path diff; two new files represented as additions"
+    },
+    {
+      "path": "experiments/prompt-injection/raw-evidence.public.json",
+      "sha256": "bb4066179c37a9cb737e68080dea355209c68f269a63f7498fb7384609c3caf9",
+      "transformation": "safe fields and hashes from 18 raw result records"
+    }
+  ]
+}

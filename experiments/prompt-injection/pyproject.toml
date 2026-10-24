@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openclaw-security-eval"
+version = "0.2.0"
+description = "Lightweight automated security experiment runner for OpenClaw"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+osef = "osef.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

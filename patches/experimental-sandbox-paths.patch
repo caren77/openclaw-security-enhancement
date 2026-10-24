@@ -1,0 +1,717 @@
+diff --git a/packages/agent-core/src/harness/env/nodejs.ts b/packages/agent-core/src/harness/env/nodejs.ts
+index 03dc7cec..6bbdb16b 100644
+--- a/packages/agent-core/src/harness/env/nodejs.ts
++++ b/packages/agent-core/src/harness/env/nodejs.ts
+@@ -263,6 +263,54 @@ function getShellEnv(
+ 
+ /** Node-backed execution environment for agent harness filesystem and shell operations. */
+ export class NodeExecutionEnv implements ExecutionEnv {
++
++  private checkProtectedFile(
++    filePath: string,
++    operation: "read" | "write",
++  ): Result<void, FileError> {
++    const normalized = filePath.toLowerCase();
++
++    const protectedRead = [
++      "private.env",
++      ".env",
++      "auth.json",
++      "token.txt",
++    ];
++
++    const protectedWrite = [
++      "agents.md",
++      "soul.md",
++    ];
++
++    if (
++      operation === "read" &&
++      protectedRead.some((name) => normalized.endsWith(name))
++    ) {
++      return err(
++        new FileError(
++          "permission_denied",
++          filePath,
++          `Reading protected file is not allowed: ${filePath}`,
++        ),
++      );
++    }
++
++    if (
++      operation === "write" &&
++      protectedWrite.some((name) => normalized.endsWith(name))
++    ) {
++      return err(
++        new FileError(
++          "permission_denied",
++          filePath,
++          `Writing protected file is not allowed: ${filePath}`,
++        ),
++      );
++    }
++
++    return ok(undefined);
++  }
++
+   cwd: string;
+   private shellPath?: string;
+   private shellEnv?: NodeJS.ProcessEnv;
+@@ -427,6 +475,11 @@ export class NodeExecutionEnv implements ExecutionEnv {
+ 
+   async readTextFile(path: string, abortSignal?: AbortSignal): Promise<Result<string, FileError>> {
+     const resolved = resolvePath(this.cwd, path);
++    const guard = this.checkProtectedFile(resolved, "read");
++    if (!guard.ok) {
++      return guard;
++    }
++
+     const aborted = abortResult(abortSignal, resolved);
+     if (aborted) {
+       return aborted;
+@@ -443,6 +496,11 @@ export class NodeExecutionEnv implements ExecutionEnv {
+     options?: { maxLines?: number; abortSignal?: AbortSignal },
+   ): Promise<Result<string[], FileError>> {
+     const resolved = resolvePath(this.cwd, path);
++    const guard = this.checkProtectedFile(resolved, "read");
++    if (!guard.ok) {
++      return guard;
++    }
++
+     const aborted = abortResult(options?.abortSignal, resolved);
+     if (aborted) {
+       return aborted;
+@@ -484,6 +542,11 @@ export class NodeExecutionEnv implements ExecutionEnv {
+     abortSignal?: AbortSignal,
+   ): Promise<Result<Uint8Array, FileError>> {
+     const resolved = resolvePath(this.cwd, path);
++    const guard = this.checkProtectedFile(resolved, "read");
++    if (!guard.ok) {
++      return guard;
++    }
++
+     const aborted = abortResult(abortSignal, resolved);
+     if (aborted) {
+       return aborted;
+@@ -501,6 +564,11 @@ export class NodeExecutionEnv implements ExecutionEnv {
+     abortSignal?: AbortSignal,
+   ): Promise<Result<void, FileError>> {
+     const resolved = resolvePath(this.cwd, path);
++    const guard = this.checkProtectedFile(resolved, "write");
++    if (!guard.ok) {
++      return guard;
++    }
++
+     const aborted = abortResult(abortSignal, resolved);
+     if (aborted) {
+       return aborted;
+diff --git a/src/agents/sandbox/browser.ts b/src/agents/sandbox/browser.ts
+index 7c809bae..05bfea35 100644
+--- a/src/agents/sandbox/browser.ts
++++ b/src/agents/sandbox/browser.ts
+@@ -44,6 +44,10 @@ import {
+   readDockerPort,
+   resolveDockerEnvPolicyEpoch,
+ } from "./docker.js";
++import {
++  mapDockerBindSpecSource,
++  resolveDockerDaemonHostPathMapper,
++} from "./docker-daemon-host-paths.js";
+ import {
+   buildNoVncObserverTokenUrl,
+   consumeNoVncObserverToken,
+@@ -248,6 +252,7 @@ export async function ensureSandboxBrowser(params: {
+     docker: params.cfg.docker,
+     browser: { ...params.cfg.browser, image: browserImage },
+   });
++  const hostPathMapper = await resolveDockerDaemonHostPathMapper({ execDocker });
+   const readOnlyWorkspaceSkillMounts = resolveReadOnlyWorkspaceSkillMounts({
+     workspaceDir: params.workspaceDir,
+     agentWorkspaceDir: params.agentWorkspaceDir,
+@@ -255,9 +260,22 @@ export async function ensureSandboxBrowser(params: {
+     workdir: params.cfg.docker.workdir,
+     workspaceAccess: params.cfg.workspaceAccess,
+   });
++  const dockerWorkspaceDir = hostPathMapper(params.workspaceDir);
++  const dockerAgentWorkspaceDir = hostPathMapper(params.agentWorkspaceDir);
++  const dockerReadOnlyWorkspaceSkillMounts = readOnlyWorkspaceSkillMounts.map((mount) => ({
++    ...mount,
++    hostPath: hostPathMapper(mount.hostPath),
++  }));
++  const mappedBrowserBinds = browserDockerCfg.binds?.map((bind) =>
++    mapDockerBindSpecSource(bind, hostPathMapper),
++  );
++  const dockerBrowserCfg = {
++    ...browserDockerCfg,
++    ...(mappedBrowserBinds ? { binds: mappedBrowserBinds } : {}),
++  };
+   const expectedHash = computeSandboxBrowserConfigHash({
+-    docker: browserDockerCfg,
+-    dockerEnvPolicyEpoch: resolveDockerEnvPolicyEpoch(browserDockerCfg.env),
++    docker: dockerBrowserCfg,
++    dockerEnvPolicyEpoch: resolveDockerEnvPolicyEpoch(dockerBrowserCfg.env),
+     browser: {
+       cdpPort: params.cfg.browser.cdpPort,
+       vncPort: params.cfg.browser.vncPort,
+@@ -269,12 +287,12 @@ export async function ensureSandboxBrowser(params: {
+     },
+     securityEpoch: SANDBOX_BROWSER_SECURITY_HASH_EPOCH,
+     workspaceAccess: params.cfg.workspaceAccess,
+-    workspaceDir: params.workspaceDir,
+-    agentWorkspaceDir: params.agentWorkspaceDir,
++    workspaceDir: dockerWorkspaceDir,
++    agentWorkspaceDir: dockerAgentWorkspaceDir,
+     mountFormatVersion: SANDBOX_MOUNT_FORMAT_VERSION,
+     createArgsEpoch: SANDBOX_DOCKER_CREATE_ARGS_EPOCH,
+     readOnlyWorkspaceSkillMounts: formatReadOnlyWorkspaceSkillMountHashState(
+-      readOnlyWorkspaceSkillMounts,
++      dockerReadOnlyWorkspaceSkillMounts,
+     ),
+   });
+ 
+@@ -352,7 +370,7 @@ export async function ensureSandboxBrowser(params: {
+     await ensureSandboxBrowserImage(browserImage);
+     const args = buildSandboxCreateArgs({
+       name: containerName,
+-      cfg: browserDockerCfg,
++      cfg: dockerBrowserCfg,
+       scopeKey: params.scopeKey,
+       labels: {
+         "openclaw.sandboxBrowser": "1",
+@@ -360,26 +378,28 @@ export async function ensureSandboxBrowser(params: {
+       },
+       configHash: expectedHash,
+       includeBinds: false,
+-      bindSourceRoots: [params.workspaceDir, params.agentWorkspaceDir],
++      bindSourceRoots: [dockerWorkspaceDir, dockerAgentWorkspaceDir],
+     });
+     appendWorkspaceMountArgs({
+       args,
+-      workspaceDir: params.workspaceDir,
+-      agentWorkspaceDir: params.agentWorkspaceDir,
+-      skillsWorkspaceDir: params.skillsWorkspaceDir,
++      workspaceDir: dockerWorkspaceDir,
++      agentWorkspaceDir: dockerAgentWorkspaceDir,
++      skillsWorkspaceDir: params.skillsWorkspaceDir
++        ? hostPathMapper(params.skillsWorkspaceDir)
++        : undefined,
+       workdir: params.cfg.docker.workdir,
+       workspaceAccess: params.cfg.workspaceAccess,
+-      readOnlyWorkspaceSkillMounts,
++      readOnlyWorkspaceSkillMounts: dockerReadOnlyWorkspaceSkillMounts,
+       includeReadOnlyWorkspaceSkillMounts: false,
+     });
+-    if (browserDockerCfg.binds?.length) {
+-      for (const bind of browserDockerCfg.binds) {
++    if (dockerBrowserCfg.binds?.length) {
++      for (const bind of dockerBrowserCfg.binds) {
+         args.push("-v", bind);
+       }
+     }
+     appendReadOnlyWorkspaceSkillMountArgs({
+       args,
+-      readOnlyWorkspaceSkillMounts,
++      readOnlyWorkspaceSkillMounts: dockerReadOnlyWorkspaceSkillMounts,
+     });
+     args.push("-p", `127.0.0.1::${params.cfg.browser.cdpPort}`);
+     if (noVncEnabled) {
+diff --git a/src/agents/sandbox/docker.config-hash-recreate.test.ts b/src/agents/sandbox/docker.config-hash-recreate.test.ts
+index dcb29409..3eee9260 100644
+--- a/src/agents/sandbox/docker.config-hash-recreate.test.ts
++++ b/src/agents/sandbox/docker.config-hash-recreate.test.ts
+@@ -22,6 +22,7 @@ const spawnState = vi.hoisted(() => ({
+   calls: [] as SpawnCall[],
+   inspectRunning: true,
+   labelHash: "",
++  currentContainerMounts: "",
+ }));
+ 
+ const registryMocks = vi.hoisted(() => ({
+@@ -64,6 +65,17 @@ async function spawnDockerProcess(commandAndArgs: string[]) {
+     stderr = `unexpected command: ${command}`;
+   } else if (args[0] === "inspect" && args[1] === "-f" && args[2] === "{{.State.Running}}") {
+     stdout = spawnState.inspectRunning ? "true\n" : "false\n";
++  } else if (
++    args[0] === "inspect" &&
++    args[1] === "-f" &&
++    args[2] === "{{json .Mounts}}"
++  ) {
++    if (spawnState.currentContainerMounts) {
++      stdout = `${spawnState.currentContainerMounts}\n`;
++    } else {
++      code = 1;
++      stderr = "No such object";
++    }
+   } else if (
+     args[0] === "inspect" &&
+     args[1] === "-f" &&
+@@ -195,6 +207,7 @@ describe("ensureSandboxContainer config-hash recreation", () => {
+     spawnState.calls.length = 0;
+     spawnState.inspectRunning = true;
+     spawnState.labelHash = "";
++    spawnState.currentContainerMounts = "";
+     registryMocks.readRegistryEntry.mockClear();
+     registryMocks.updateRegistry.mockClear();
+     registryMocks.updateRegistry.mockResolvedValue(undefined);
+@@ -456,6 +469,31 @@ describe("ensureSandboxContainer config-hash recreation", () => {
+     expect(customMountIdx).toBeGreaterThan(workspaceMountIdx);
+   });
+ 
++  it("maps gateway container workspace paths to Docker daemon host paths for DooD", async () => {
++    const workspaceDir = "/home/node/.openclaw/workspace/project";
++    const cfg = createSandboxConfig([], [], "rw", {});
++    spawnState.inspectRunning = false;
++    spawnState.currentContainerMounts = JSON.stringify([
++      {
++        Type: "bind",
++        Source: "/Users/me/openclaw/config",
++        Destination: "/home/node/.openclaw",
++      },
++      {
++        Type: "bind",
++        Source: "/Users/me/openclaw/workspace",
++        Destination: "/home/node/.openclaw/workspace",
++      },
++    ]);
++    registryMocks.readRegistryEntry.mockResolvedValue(null);
++
++    const createCall = await ensureSandboxCreateCallForTest({ cfg, workspaceDir });
++
++    const bindArgs = collectDockerFlagValues(createCall.args, "-v");
++    expect(bindArgs).toContain("/Users/me/openclaw/workspace/project:/workspace:z");
++    expect(bindArgs).not.toContain(`${workspaceDir}:/workspace:z`);
++  });
++
+   it("applies read-only skill overlays after custom binds", async () => {
+     // Protected skill overlays must be appended last so even an overlapping
+     // custom bind cannot make checked-in skills writable.
+diff --git a/src/agents/sandbox/docker.ts b/src/agents/sandbox/docker.ts
+index a212638c..91762f2a 100644
+--- a/src/agents/sandbox/docker.ts
++++ b/src/agents/sandbox/docker.ts
+@@ -98,6 +98,11 @@ import {
+   SANDBOX_DOCKER_CREATE_ARGS_EPOCH,
+ } from "./constants.js";
+ import { handleHotSandboxConfigMismatch } from "./current-config.js";
++import {
++  mapDockerBindSpecSource,
++  resolveDockerDaemonHostPathMapper,
++  type DockerHostPathMapper,
++} from "./docker-daemon-host-paths.js";
+ import { readRegistryEntry, updateRegistry } from "./registry.js";
+ import { resolveSandboxScopeKey, slugifySessionKey } from "./shared.js";
+ import type { SandboxConfig, SandboxDockerConfig, SandboxWorkspaceAccess } from "./types.js";
+@@ -451,6 +456,16 @@ function appendCustomBinds(args: string[], cfg: SandboxDockerConfig): void {
+   }
+ }
+ 
++function mapReadOnlyWorkspaceSkillMounts(
++  mounts: readonly ReadOnlyWorkspaceSkillMount[],
++  hostPathMapper: DockerHostPathMapper,
++): ReadOnlyWorkspaceSkillMount[] {
++  return mounts.map((mount) => ({
++    ...mount,
++    hostPath: hostPathMapper(mount.hostPath),
++  }));
++}
++
+ async function createSandboxContainer(params: {
+   name: string;
+   cfg: SandboxDockerConfig;
+@@ -461,33 +476,48 @@ async function createSandboxContainer(params: {
+   scopeKey: string;
+   configHash?: string;
+   readOnlyWorkspaceSkillMounts: readonly ReadOnlyWorkspaceSkillMount[];
++  hostPathMapper: DockerHostPathMapper;
+ }) {
+-  const { name, cfg, workspaceDir, scopeKey } = params;
++  const { name, cfg, workspaceDir, scopeKey, hostPathMapper } = params;
+   await ensureDockerImage(cfg.image);
++  const dockerWorkspaceDir = hostPathMapper(workspaceDir);
++  const dockerAgentWorkspaceDir = hostPathMapper(params.agentWorkspaceDir);
++  const dockerSkillsWorkspaceDir = params.skillsWorkspaceDir
++    ? hostPathMapper(params.skillsWorkspaceDir)
++    : undefined;
++  const dockerReadOnlyWorkspaceSkillMounts = mapReadOnlyWorkspaceSkillMounts(
++    params.readOnlyWorkspaceSkillMounts,
++    hostPathMapper,
++  );
++  const mappedBinds = cfg.binds?.map((bind) => mapDockerBindSpecSource(bind, hostPathMapper));
++  const dockerCfg: SandboxDockerConfig = {
++    ...cfg,
++    ...(mappedBinds ? { binds: mappedBinds } : {}),
++  };
+ 
+   const args = buildSandboxCreateArgs({
+     name,
+-    cfg,
++    cfg: dockerCfg,
+     scopeKey,
+     configHash: params.configHash,
+     includeBinds: false,
+-    bindSourceRoots: [workspaceDir, params.agentWorkspaceDir],
++    bindSourceRoots: [dockerWorkspaceDir, dockerAgentWorkspaceDir],
+   });
+   args.push("--workdir", cfg.workdir);
+   appendWorkspaceMountArgs({
+     args,
+-    workspaceDir,
+-    agentWorkspaceDir: params.agentWorkspaceDir,
+-    skillsWorkspaceDir: params.skillsWorkspaceDir,
++    workspaceDir: dockerWorkspaceDir,
++    agentWorkspaceDir: dockerAgentWorkspaceDir,
++    skillsWorkspaceDir: dockerSkillsWorkspaceDir,
+     workdir: cfg.workdir,
+     workspaceAccess: params.workspaceAccess,
+-    readOnlyWorkspaceSkillMounts: params.readOnlyWorkspaceSkillMounts,
++    readOnlyWorkspaceSkillMounts: dockerReadOnlyWorkspaceSkillMounts,
+     includeReadOnlyWorkspaceSkillMounts: false,
+   });
+-  appendCustomBinds(args, cfg);
++  appendCustomBinds(args, dockerCfg);
+   appendReadOnlyWorkspaceSkillMountArgs({
+     args,
+-    readOnlyWorkspaceSkillMounts: params.readOnlyWorkspaceSkillMounts,
++    readOnlyWorkspaceSkillMounts: dockerReadOnlyWorkspaceSkillMounts,
+   });
+   args.push(cfg.image, "sleep", "infinity");
+ 
+@@ -515,6 +545,7 @@ export async function ensureSandboxContainer(params: {
+   const slug = params.cfg.scope === "shared" ? "shared" : slugifySessionKey(scopeKey);
+   const name = `${params.cfg.docker.containerPrefix}${slug}`;
+   const containerName = name.slice(0, 63);
++  const hostPathMapper = await resolveDockerDaemonHostPathMapper({ execDocker });
+   const readOnlyWorkspaceSkillMounts = resolveReadOnlyWorkspaceSkillMounts({
+     workspaceDir: params.workspaceDir,
+     agentWorkspaceDir: params.agentWorkspaceDir,
+@@ -522,16 +553,29 @@ export async function ensureSandboxContainer(params: {
+     workdir: params.cfg.docker.workdir,
+     workspaceAccess: params.cfg.workspaceAccess,
+   });
++  const dockerWorkspaceDir = hostPathMapper(params.workspaceDir);
++  const dockerAgentWorkspaceDir = hostPathMapper(params.agentWorkspaceDir);
++  const dockerReadOnlyWorkspaceSkillMounts = mapReadOnlyWorkspaceSkillMounts(
++    readOnlyWorkspaceSkillMounts,
++    hostPathMapper,
++  );
++  const mappedBinds = params.cfg.docker.binds?.map((bind) =>
++    mapDockerBindSpecSource(bind, hostPathMapper),
++  );
++  const dockerCfg: SandboxDockerConfig = {
++    ...params.cfg.docker,
++    ...(mappedBinds ? { binds: mappedBinds } : {}),
++  };
+   const expectedHash = computeSandboxConfigHash({
+-    docker: params.cfg.docker,
+-    dockerEnvPolicyEpoch: resolveDockerEnvPolicyEpoch(params.cfg.docker.env),
++    docker: dockerCfg,
++    dockerEnvPolicyEpoch: resolveDockerEnvPolicyEpoch(dockerCfg.env),
+     workspaceAccess: params.cfg.workspaceAccess,
+-    workspaceDir: params.workspaceDir,
+-    agentWorkspaceDir: params.agentWorkspaceDir,
++    workspaceDir: dockerWorkspaceDir,
++    agentWorkspaceDir: dockerAgentWorkspaceDir,
+     mountFormatVersion: SANDBOX_MOUNT_FORMAT_VERSION,
+     createArgsEpoch: SANDBOX_DOCKER_CREATE_ARGS_EPOCH,
+     readOnlyWorkspaceSkillMounts: formatReadOnlyWorkspaceSkillMountHashState(
+-      readOnlyWorkspaceSkillMounts,
++      dockerReadOnlyWorkspaceSkillMounts,
+     ),
+   });
+   const now = Date.now();
+@@ -585,6 +629,7 @@ export async function ensureSandboxContainer(params: {
+       scopeKey,
+       configHash: expectedHash,
+       readOnlyWorkspaceSkillMounts,
++      hostPathMapper,
+     });
+   } else if (!running) {
+     await execDocker(["start", containerName]);
+diff --git a/src/agents/sandbox/workspace-mounts.ts b/src/agents/sandbox/workspace-mounts.ts
+index 1d0457a6..bf1d2193 100644
+--- a/src/agents/sandbox/workspace-mounts.ts
++++ b/src/agents/sandbox/workspace-mounts.ts
+@@ -19,6 +19,8 @@ export type ReadOnlyWorkspaceSkillMount = {
+   containerPath: string;
+ };
+ 
++type HostPathMapper = (hostPath: string) => string;
++
+ function formatManagedWorkspaceBind(params: {
+   hostPath: string;
+   containerPath: string;
+@@ -119,12 +121,14 @@ export function formatReadOnlyWorkspaceSkillMountHashState(
+ export function appendReadOnlyWorkspaceSkillMountArgs(params: {
+   args: string[];
+   readOnlyWorkspaceSkillMounts: readonly ReadOnlyWorkspaceSkillMount[];
++  hostPathMapper?: HostPathMapper;
+ }): void {
++  const hostPathMapper = params.hostPathMapper ?? ((hostPath: string) => hostPath);
+   for (const mount of params.readOnlyWorkspaceSkillMounts) {
+     params.args.push(
+       "-v",
+       formatManagedWorkspaceBind({
+-        hostPath: mount.hostPath,
++        hostPath: hostPathMapper(mount.hostPath),
+         containerPath: mount.containerPath,
+         readOnly: true,
+       }),
+@@ -142,13 +146,15 @@ export function appendWorkspaceMountArgs(params: {
+   workspaceAccess: SandboxWorkspaceAccess;
+   readOnlyWorkspaceSkillMounts?: readonly ReadOnlyWorkspaceSkillMount[];
+   includeReadOnlyWorkspaceSkillMounts?: boolean;
++  hostPathMapper?: HostPathMapper;
+ }) {
+   const { args, workspaceDir, agentWorkspaceDir, workdir, workspaceAccess } = params;
++  const hostPathMapper = params.hostPathMapper ?? ((hostPath: string) => hostPath);
+ 
+   args.push(
+     "-v",
+     formatManagedWorkspaceBind({
+-      hostPath: workspaceDir,
++      hostPath: hostPathMapper(workspaceDir),
+       containerPath: workdir,
+       readOnly: workspaceAccess !== "rw",
+     }),
+@@ -158,7 +164,7 @@ export function appendWorkspaceMountArgs(params: {
+     args.push(
+       "-v",
+       formatManagedWorkspaceBind({
+-        hostPath: agentWorkspaceDir,
++        hostPath: hostPathMapper(agentWorkspaceDir),
+         containerPath: SANDBOX_AGENT_WORKSPACE_MOUNT,
+         readOnly: workspaceAccess === "ro",
+       }),
+@@ -177,6 +183,7 @@ export function appendWorkspaceMountArgs(params: {
+           workdir,
+           workspaceAccess,
+         }),
++      hostPathMapper,
+     });
+   }
+ }
+diff --git a/src/agents/sandbox/docker-daemon-host-paths.ts b/src/agents/sandbox/docker-daemon-host-paths.ts
+new file mode 100644
+--- /dev/null
++++ b/src/agents/sandbox/docker-daemon-host-paths.ts
+@@ -0,0 +1,158 @@
++/**
++ * Resolves bind-mount sources for Docker daemons reached from inside a container.
++ *
++ * In Docker-outside-of-Docker, the OpenClaw gateway process sees container paths
++ * such as /home/node/.openclaw, but the Docker daemon resolves bind sources in
++ * the host namespace. Docker inspect on the gateway container provides the
++ * Source -> Destination table needed to translate those paths before creating
++ * sandbox containers.
++ */
++import os from "node:os";
++import path from "node:path";
++import { splitSandboxBindSpec } from "./bind-spec.js";
++import { isSandboxHostPathAbsolute, normalizeSandboxHostPath } from "./host-paths.js";
++
++type ExecDockerFn = (
++  args: string[],
++  opts?: { allowFailure?: boolean },
++) => Promise<{ stdout: string; stderr: string; code: number }>;
++
++type DockerInspectMount = {
++  Type?: unknown;
++  Source?: unknown;
++  Destination?: unknown;
++};
++
++export type DockerHostPathMapper = (hostPath: string) => string;
++
++type ContainerMountPathMap = {
++  source: string;
++  destination: string;
++  destinationKey: string;
++};
++
++const identityMapper: DockerHostPathMapper = (hostPath) => hostPath;
++let cachedMapper: Promise<DockerHostPathMapper> | undefined;
++
++function normalizeContainerMountPath(raw: string): string {
++  return path.posix.normalize(raw.replaceAll("\\", "/")).replace(/\/+$/, "") || "/";
++}
++
++function isContainerPathInsideMount(candidateKey: string, mountKey: string): boolean {
++  if (mountKey === "/") {
++    return candidateKey.startsWith("/");
++  }
++  return candidateKey === mountKey || candidateKey.startsWith(`${mountKey}/`);
++}
++
++function joinMappedHostPath(source: string, relative: string): string {
++  if (!relative || relative === ".") {
++    return source;
++  }
++  if (/^[A-Za-z]:[\\/]/.test(source)) {
++    return path.win32.join(source, ...relative.split("/"));
++  }
++  return path.posix.join(source, relative);
++}
++
++export function createDockerDaemonHostPathMapper(
++  mounts: readonly DockerInspectMount[],
++): DockerHostPathMapper {
++  const pathMaps: ContainerMountPathMap[] = mounts
++    .filter((mount) => {
++      const type = typeof mount.Type === "string" ? mount.Type.toLowerCase() : "";
++      return type === "bind" || type === "volume";
++    })
++    .map((mount) => {
++      const source = typeof mount.Source === "string" ? mount.Source.trim() : "";
++      const destination = typeof mount.Destination === "string" ? mount.Destination.trim() : "";
++      if (!source || !destination || !destination.startsWith("/")) {
++        return null;
++      }
++      const normalizedDestination = normalizeContainerMountPath(destination);
++      return {
++        source,
++        destination: normalizedDestination,
++        destinationKey: normalizedDestination,
++      };
++    })
++    .filter((mount): mount is ContainerMountPathMap => Boolean(mount))
++    .toSorted((left, right) => right.destinationKey.length - left.destinationKey.length);
++
++  if (pathMaps.length === 0) {
++    return identityMapper;
++  }
++
++  return (hostPath: string): string => {
++    if (!isSandboxHostPathAbsolute(hostPath)) {
++      return hostPath;
++    }
++    const normalized = normalizeContainerMountPath(hostPath);
++    const match = pathMaps.find((mount) =>
++      isContainerPathInsideMount(normalized, mount.destinationKey),
++    );
++    if (!match) {
++      return hostPath;
++    }
++    const relative = path.posix.relative(match.destination, normalized);
++    return normalizeSandboxHostPath(joinMappedHostPath(match.source, relative));
++  };
++}
++
++function parseDockerInspectMounts(raw: string): DockerInspectMount[] | null {
++  try {
++    const parsed = JSON.parse(raw);
++    return Array.isArray(parsed) ? (parsed as DockerInspectMount[]) : null;
++  } catch {
++    return null;
++  }
++}
++
++function resolveCurrentContainerInspectName(env: NodeJS.ProcessEnv): string | null {
++  return (
++    env.OPENCLAW_DOCKER_CONTAINER_ID?.trim() ||
++    env.HOSTNAME?.trim() ||
++    os.hostname().trim() ||
++    null
++  );
++}
++
++async function resolveDockerDaemonHostPathMapperUncached(params: {
++  execDocker: ExecDockerFn;
++  env?: NodeJS.ProcessEnv;
++}): Promise<DockerHostPathMapper> {
++  const inspectName = resolveCurrentContainerInspectName(params.env ?? process.env);
++  if (!inspectName) {
++    return identityMapper;
++  }
++  const result = await params.execDocker(
++    ["inspect", "-f", "{{json .Mounts}}", inspectName],
++    { allowFailure: true },
++  );
++  if (result.code !== 0) {
++    return identityMapper;
++  }
++  const mounts = parseDockerInspectMounts(result.stdout.trim());
++  return mounts ? createDockerDaemonHostPathMapper(mounts) : identityMapper;
++}
++
++export async function resolveDockerDaemonHostPathMapper(params: {
++  execDocker: ExecDockerFn;
++  env?: NodeJS.ProcessEnv;
++  cache?: boolean;
++}): Promise<DockerHostPathMapper> {
++  if (params.cache === false) {
++    return resolveDockerDaemonHostPathMapperUncached(params);
++  }
++  cachedMapper ??= resolveDockerDaemonHostPathMapperUncached(params);
++  return cachedMapper;
++}
++
++export function mapDockerBindSpecSource(spec: string, mapper: DockerHostPathMapper): string {
++  const split = splitSandboxBindSpec(spec);
++  if (!split) {
++    return spec;
++  }
++  const mappedHost = mapper(split.host);
++  return `${mappedHost}:${split.container}${split.options ? `:${split.options}` : ""}`;
++}
+diff --git a/src/agents/sandbox/docker-daemon-host-paths.test.ts b/src/agents/sandbox/docker-daemon-host-paths.test.ts
+new file mode 100644
+--- /dev/null
++++ b/src/agents/sandbox/docker-daemon-host-paths.test.ts
+@@ -0,0 +1,57 @@
++import { describe, expect, it } from "vitest";
++import {
++  createDockerDaemonHostPathMapper,
++  mapDockerBindSpecSource,
++} from "./docker-daemon-host-paths.js";
++
++describe("createDockerDaemonHostPathMapper", () => {
++  it("maps gateway container paths to Docker daemon host paths using the longest mount", () => {
++    const mapper = createDockerDaemonHostPathMapper([
++      {
++        Type: "bind",
++        Source: "/Users/me/openclaw/config",
++        Destination: "/home/node/.openclaw",
++      },
++      {
++        Type: "bind",
++        Source: "/Users/me/openclaw/workspace",
++        Destination: "/home/node/.openclaw/workspace",
++      },
++    ]);
++
++    expect(mapper("/home/node/.openclaw/sandbox/skills-workspaces/session")).toBe(
++      "/Users/me/openclaw/config/sandbox/skills-workspaces/session",
++    );
++    expect(mapper("/home/node/.openclaw/workspace/project")).toBe(
++      "/Users/me/openclaw/workspace/project",
++    );
++  });
++
++  it("leaves paths outside gateway mounts unchanged", () => {
++    const mapper = createDockerDaemonHostPathMapper([
++      {
++        Type: "bind",
++        Source: "/Users/me/openclaw/config",
++        Destination: "/home/node/.openclaw",
++      },
++    ]);
++
++    expect(mapper("/tmp/workspace")).toBe("/tmp/workspace");
++  });
++});
++
++describe("mapDockerBindSpecSource", () => {
++  it("maps only the source side of Docker bind specs", () => {
++    const mapper = createDockerDaemonHostPathMapper([
++      {
++        Type: "bind",
++        Source: "/Users/me/openclaw/config",
++        Destination: "/home/node/.openclaw",
++      },
++    ]);
++
++    expect(
++      mapDockerBindSpecSource("/home/node/.openclaw/cache:/cache:ro,z", mapper),
++    ).toBe("/Users/me/openclaw/config/cache:/cache:ro,z");
++  });
++});

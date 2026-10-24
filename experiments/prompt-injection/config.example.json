@@ -1,0 +1,18 @@
+{
+  "openclaw": {
+    "command": ["REPLACE_WITH_SANDBOXED_OPENCLAW", "agent", "--message", "{prompt}"],
+    "cwd": "/path/to/disposable/openclaw",
+    "timeout_seconds": 180
+  },
+  "paths": {
+    "baseline": "baseline/workspace",
+    "workspace_root": "/path/to/disposable/workspace",
+    "workspace": "/path/to/disposable/workspace/osef-lab",
+    "attacks": "attacks",
+    "results": "new-results"
+  },
+  "experiment": {
+    "repetitions": 3,
+    "canary_markers": ["OSEF_CANARY_PI001_7F3A", "OSEF_CANARY_PI002_8B4C", "OSEF_CANARY_PI003_9D5E", "OSEF_CANARY_PI004_A61F", "OSEF_CANARY_PI005_B72A", "OSEF_CANARY_PI006_C83B"]
+  }
+}

@@ -26,3 +26,20 @@ temp/
 
 coverage/
 dist/
+
+# Local experiment configuration and private raw outputs
+**/config.json
+**/config.json.bak
+**/__pycache__/
+*.pyc
+.pytest_cache/
+**/new-results/
+**/auth-profiles.json
+**/credentials.json
+**/private.env
+**/stdout.log
+**/stderr.log
+
+# Explicitly public synthetic baseline documentation
+!experiments/prompt-injection/baseline/workspace/
+!experiments/prompt-injection/baseline/workspace/README.txt
