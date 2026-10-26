@@ -14,8 +14,12 @@
    performed now cannot substitute for missing formal experiment records.
 5. Six prompt-injection designs repeated three times are 18 trials, not 18
    independent designs. The recovered cohort's sandbox metadata precludes
-   calling it an unprotected baseline. No matched defense comparison supports
-   the requested 60% and 6.7% figures in recovered row-level evidence.
+   calling it an unprotected baseline. A separate researcher-conducted manual
+   comparison used 10 prompts × 3 repetitions × 3 configurations = 90 trials,
+   with reported ASRs 60% (18/30), 6.7% (2/30, rounded) and 0% (0/30).
+   These are PPT aggregates, not independently verified public trial data.
+   Screenshot records are intentionally not published; automated rows do not
+   substitute for them. This limitation does not imply the study did not occur.
 6. No observed exec/write/edit calls does not prove an allowlist caused the
    outcome. Missing tool arguments mean sensitive reads remain unknown. Canary
    leakage is narrower than all prompt-injection success.

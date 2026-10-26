@@ -1,5 +1,13 @@
 # Publication validation — 2026-10-24
 
+Historical report: on 2026-10-26 the researcher clarified that the manual
+90-trial comparison is separate from the automated 18-trial cohort. Manual
+60% (18/30), 6.7% (2/30, rounded) and 0% (0/30) results are retained as
+researcher-reported aggregates; screenshots are intentionally not public.
+Earlier statements about unavailable row-level evidence do not deny that the
+manual study occurred. See `PR1_REVIEW_2026-10-26.md` for the follow-up review;
+the test results below remain dated 2026-10-24.
+
 This is new publication-time validation, not a reconstruction of historical
 experiment runs. Source files were copied/exported, not changed in the original
 research checkout. Prior published experiments, source modules, license and

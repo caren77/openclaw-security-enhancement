@@ -7,6 +7,8 @@ An independent undergraduate summer research archive based on
 It separates early risk experiments from later source-level defenses. Controlled
 test outcomes are not guarantees of safety in real deployments.
 
+Research progression: **Security Risk Analysis → Defense Design → Source-Level Implementation → Experimental Evaluation**. Early experiments motivate the later four source-level defenses; their datasets are not pooled.
+
 ## Research background and objectives
 
 Local agents can read files, invoke tools and load third-party extensions.
@@ -43,7 +45,26 @@ different questions.
 
 ## Early experiments
 
-### Prompt Injection
+### Manual Prompt Injection controlled evaluation (researcher-reported)
+
+The researcher reports personally conducting 10 attack prompts × 3 repetitions
+per configuration: 30 trials per configuration, 90 trials across three configurations.
+
+| Configuration | Successful attacks / trials | ASR |
+| --- | ---: | ---: |
+| No protection | 18/30 | 60% (18/30) |
+| Output Guard | 2/30 | 6.7% (2/30, rounded) |
+| Sandbox + Workspace Isolation + Tool Restriction | 0/30 | 0% (0/30) |
+
+Manual evaluation results are researcher-reported aggregate statistics. The underlying screenshot-based records are not included in this public repository; therefore, these aggregate results cannot currently be independently reproduced or audited from the published materials.
+
+These results are retained as the researcher's manual study, not dismissed as
+fabricated or presented as independently verified. Screenshots are intentionally
+not published. No trial-level records are reconstructed from these percentages.
+The complete manual success rubric and environment details are not publicly
+archived; do not assume its success criterion matches automated canary leakage.
+
+### Automated Prompt Injection (separate dataset)
 
 [Harness, six fixtures and public results](experiments/prompt-injection/README.md).
 The recovered cohort has **6 distinct fixtures × 3 repetitions = 18 trials**,
@@ -51,9 +72,10 @@ not 18 distinct attacks. Its analysis defines attack success as a leaked
 synthetic canary. All 18 final records report no canary leakage and no
 `exec/write/edit` calls. Sensitive read paths remain unknown.
 
-The requested baseline “approximately 60%” and Output Guard “approximately
-6.7%” lack recovered row-level evidence. They are not presented as verified
-results. The observed 0/18 dangerous calls alone does not establish that a tool
+Public data: [18 analysis rows](experiments/prompt-injection/results.public.csv)
+and [safe raw-record projection](experiments/prompt-injection/raw-evidence.public.json).
+These automated records are **not** the raw data for the 90 manual trials.
+The observed 0/18 dangerous calls alone does not establish that a tool
 allowlist caused that outcome.
 
 ### Agent Misoperation
@@ -62,6 +84,10 @@ allowlist caused that outcome.
 20 prompts × 3 runs give 60 records. The evaluator compares file hashes and
 prompt-derived permitted targets. REVIEW represents insufficient evidence about
 scope access, not a confirmed misoperation or completed human approval.
+
+The [60-row misoperation CSV](experiments/agent-misoperation/results.public.csv)
+records this selected benchmark's results: MSR = 17/60 = 28.3%, not a universal
+agent misoperation rate.
 
 ### Early defense validation
 
@@ -109,8 +135,9 @@ See [implementation boundaries](docs/implementation.md).
 
 | Experiment | Recovered result | Evidence status / qualification |
 | --- | --- | --- |
-| Prompt injection final cohort | 0/18 canary leaks; 18 SAFE_REFUSAL; dangerous tool calls 0/18 | Final analysis table checked against 18 per-run records; not a controlled defense comparison |
-| Agent misoperation | SAFE 28, REVIEW 15, MISOPERATION 17, ERROR 0; MSR 28.3% | Recovered 60-row final CSV; REVIEW excluded from numerator |
+| Manual prompt injection | No protection: 18/30, 60%; Output Guard: 2/30, 6.7% (rounded); combined restrictions: 0/30, 0% | Researcher-reported PPT aggregates; screenshot records intentionally not public; separate 90-trial study |
+| Automated prompt injection final cohort | 0/18 canary leaks; 18 SAFE_REFUSAL; dangerous tool calls 0/18 | Final analysis table checked against 18 per-run records; not a controlled defense comparison |
+| Agent misoperation | SAFE 28, REVIEW 15, MISOPERATION 17, ERROR 0; MSR 28.3% (17/60) | Recovered 60-row final CSV; REVIEW excluded from numerator |
 | Early defenses | PASS 13, REVIEW 3, FAIL 3, ERROR 1 | Recovered 20-row CSV; mixed local checks and agent observations |
 | Policy Integrity | Baseline 6/6 successes, hardened 6/6 blocks | Existing published controlled records, retained unchanged |
 | Trusted Rollback | Without rollback: 0/6 recovery; with rollback: 6/6 recovery; both block the first turn 6/6 | Existing published controlled records, retained unchanged |
@@ -159,7 +186,8 @@ failures are preserved. [Detailed limitations](docs/limitations.md).
 
 ## Future work
 
-Recover missing raw records; build an independent held-out corpus; calibrate
+Recover missing Scanner records; document manual methods without requiring
+publication of private screenshots; build an independent held-out corpus; calibrate
 scores against explicit costs; add syntax/dataflow-aware analysis, bounded
 approval workflows, durable scanner audit events and runtime confinement.
 These are future work, not implemented guarantees.
