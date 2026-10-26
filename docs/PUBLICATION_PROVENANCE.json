@@ -1,0 +1,348 @@
+{
+  "upstream_base": "090cb491227e45cdbdc0a65ea2718c8fe62461c9",
+  "files": [
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/security/scanner.ts",
+      "source": "openclaw/src/skills/security/scanner.ts",
+      "source_sha256": "5fc4422c28aea390ae981266c81d932ad5768ecfac32a7015c9441799678f093",
+      "public_sha256": "5fc4422c28aea390ae981266c81d932ad5768ecfac32a7015c9441799678f093",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/security/scanner.test.ts",
+      "source": "openclaw/src/skills/security/scanner.test.ts",
+      "source_sha256": "83c491a8d294a4a21665a9618196197e1b3b4c1eae468a6fe43d00a64a09adb7",
+      "public_sha256": "83c491a8d294a4a21665a9618196197e1b3b4c1eae468a6fe43d00a64a09adb7",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/loading/workspace.ts",
+      "source": "openclaw/src/skills/loading/workspace.ts",
+      "source_sha256": "bdb350264c544e6457018236ab5899f568fa43705d3e6a693d9f659425c09ec9",
+      "public_sha256": "bdb350264c544e6457018236ab5899f568fa43705d3e6a693d9f659425c09ec9",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/loading/workspace-load.test.ts",
+      "source": "openclaw/src/skills/loading/workspace-load.test.ts",
+      "source_sha256": "e252e710d4f05f034702afe46e0949f2ffe92dfe42093b425045552122fe07cf",
+      "public_sha256": "e252e710d4f05f034702afe46e0949f2ffe92dfe42093b425045552122fe07cf",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/loading/session.ts",
+      "source": "openclaw/src/skills/loading/session.ts",
+      "source_sha256": "8d96725325b4067081d5d49af37d8abdc042d29590ff52af940ed221ebd420e9",
+      "public_sha256": "8d96725325b4067081d5d49af37d8abdc042d29590ff52af940ed221ebd420e9",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/loading/session.test.ts",
+      "source": "openclaw/src/skills/loading/session.test.ts",
+      "source_sha256": "779723a538c271580278a02a84f84771d079c9342b4f617f1944d917ff34e4e9",
+      "public_sha256": "779723a538c271580278a02a84f84771d079c9342b4f617f1944d917ff34e4e9",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/node-host/skills.ts",
+      "source": "openclaw/src/node-host/skills.ts",
+      "source_sha256": "6b9ea12d044e683e05e5f0550e1999d6af8fd7fc9808b65971e259fb65847766",
+      "public_sha256": "6b9ea12d044e683e05e5f0550e1999d6af8fd7fc9808b65971e259fb65847766",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/node-host/skills.test.ts",
+      "source": "openclaw/src/node-host/skills.test.ts",
+      "source_sha256": "fe53a912eafd66bd7faf5ea2d52957fc6c6046ac76cbbf5ea74bbe6fe4e1cc92",
+      "public_sha256": "fe53a912eafd66bd7faf5ea2d52957fc6c6046ac76cbbf5ea74bbe6fe4e1cc92",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/runtime/remote-skills.ts",
+      "source": "openclaw/src/skills/runtime/remote-skills.ts",
+      "source_sha256": "603f55fb922afe5bcfa5dce90780cd1735e477ad149e1553aaf46d9fbb26c2f0",
+      "public_sha256": "603f55fb922afe5bcfa5dce90780cd1735e477ad149e1553aaf46d9fbb26c2f0",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/upstream/src/skills/runtime/remote-skills.test.ts",
+      "source": "openclaw/src/skills/runtime/remote-skills.test.ts",
+      "source_sha256": "e1c7d8c7142e21706bc99a34b44aaf9e8fb00d9e14ff2c295cb55ab1f6f56796",
+      "public_sha256": "e1c7d8c7142e21706bc99a34b44aaf9e8fb00d9e14ff2c295cb55ab1f6f56796",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "patches/skill-security-scanner.patch",
+      "source": "openclaw working-tree diff against 090cb491227e45cdbdc0a65ea2718c8fe62461c9",
+      "source_sha256": "e37de3127bc82ccecefe5824597a22840d51324a886e70f1c0a02e61adb94943",
+      "public_sha256": "e37de3127bc82ccecefe5824597a22840d51324a886e70f1c0a02e61adb94943",
+      "transformation": "selected-path Git diff; new files represented as additions"
+    },
+    {
+      "path": "patches/existing-security-integration.patch",
+      "source": "openclaw working-tree diff against 090cb491227e45cdbdc0a65ea2718c8fe62461c9",
+      "source_sha256": "b506fb4da3cb2b2e2eb1c1fc7a85dfe3a9ccb7b297b71e3edc16e5dfb5c43c59",
+      "public_sha256": "b506fb4da3cb2b2e2eb1c1fc7a85dfe3a9ccb7b297b71e3edc16e5dfb5c43c59",
+      "transformation": "selected-path Git diff; new files represented as additions"
+    },
+    {
+      "path": "src/skill-security-scanner/historical-notes/SKILL_SECURITY_ARCHITECTURE.md",
+      "source": "openclaw/SKILL_SECURITY_ARCHITECTURE.md",
+      "source_sha256": "547f4ff503f6be442e9c7bf4e94a224716fe3f2d5e86f7c082fdadd5c3057e4a",
+      "public_sha256": "547f4ff503f6be442e9c7bf4e94a224716fe3f2d5e86f7c082fdadd5c3057e4a",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/historical-notes/SKILL_SECURITY_POLICY_CALIBRATION.md",
+      "source": "openclaw/SKILL_SECURITY_POLICY_CALIBRATION.md",
+      "source_sha256": "e75e901e848302fd842bf90eef853f225bae1395f5c07a81c05aa3517b1026f2",
+      "public_sha256": "e75e901e848302fd842bf90eef853f225bae1395f5c07a81c05aa3517b1026f2",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/historical-notes/SKILL_SECURITY_REVIEW_GAP_ANALYSIS.md",
+      "source": "openclaw/SKILL_SECURITY_REVIEW_GAP_ANALYSIS.md",
+      "source_sha256": "ffb44b17210cc763010c1855aa54b1df84da4ee901523f2ac3369cde48295426",
+      "public_sha256": "ffb44b17210cc763010c1855aa54b1df84da4ee901523f2ac3369cde48295426",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "README_PRE_PUBLICATION.md",
+      "source": "publication main@48e8dbf/README.md",
+      "source_sha256": "e69d5a7f50ec129ee83b29c53d853ad8b153fb49028a5ac7c074b707d5f3b38f",
+      "public_sha256": "e69d5a7f50ec129ee83b29c53d853ad8b153fb49028a5ac7c074b707d5f3b38f",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "src/skill-security-scanner/UPSTREAM_LICENSE",
+      "source": "openclaw/LICENSE",
+      "source_sha256": "73571b25326281d369087f469842c02444fe39faaecebda4d82ed21ff3a1c29d",
+      "public_sha256": "73571b25326281d369087f469842c02444fe39faaecebda4d82ed21ff3a1c29d",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "source": "openclaw/THIRD_PARTY_NOTICES.md",
+      "source_sha256": "c84200f7a9bb8b3abc8563520433316716a9eb83915cfe7c3063d5e6fce5e7ca",
+      "public_sha256": "c84200f7a9bb8b3abc8563520433316716a9eb83915cfe7c3063d5e6fce5e7ca",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/__init__.py",
+      "source": "openclaw-security-eval-v2/src/osef/__init__.py",
+      "source_sha256": "667d4a15b970b851e20d17510224670c14646cfb6d5a1e388ca6b9cc6da8bf41",
+      "public_sha256": "667d4a15b970b851e20d17510224670c14646cfb6d5a1e388ca6b9cc6da8bf41",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/analysis.py",
+      "source": "openclaw-security-eval-v2/src/osef/analysis.py",
+      "source_sha256": "0629a61392637c82ba50a77109a70286a19a0609d0f22e070e60a9d419223d6f",
+      "public_sha256": "0629a61392637c82ba50a77109a70286a19a0609d0f22e070e60a9d419223d6f",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/cli.py",
+      "source": "openclaw-security-eval-v2/src/osef/cli.py",
+      "source_sha256": "ad9dff6fa331beec90f0dec9c831823322a7021cdb06239993ee79bb4c5d73a2",
+      "public_sha256": "ad9dff6fa331beec90f0dec9c831823322a7021cdb06239993ee79bb4c5d73a2",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/client.py",
+      "source": "openclaw-security-eval-v2/src/osef/client.py",
+      "source_sha256": "8ea8a762a1511930bd2a030c06cd53f50b5eea0a71a8537d187d207414812d31",
+      "public_sha256": "8ea8a762a1511930bd2a030c06cd53f50b5eea0a71a8537d187d207414812d31",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/config.py",
+      "source": "openclaw-security-eval-v2/src/osef/config.py",
+      "source_sha256": "f7cd81c70f095875a757990e045bedc119765bb2e2935acfd006ef6d70867bb4",
+      "public_sha256": "f7cd81c70f095875a757990e045bedc119765bb2e2935acfd006ef6d70867bb4",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/files.py",
+      "source": "openclaw-security-eval-v2/src/osef/files.py",
+      "source_sha256": "1f0eb560daf362f07bb6426f2ea7b58f9dbd567c204fce503968e0df8fabed3d",
+      "public_sha256": "1f0eb560daf362f07bb6426f2ea7b58f9dbd567c204fce503968e0df8fabed3d",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/models.py",
+      "source": "openclaw-security-eval-v2/src/osef/models.py",
+      "source_sha256": "ec4b4691f223814de55705439e57a291b6d0be325a2471d320916e8550c070b9",
+      "public_sha256": "ec4b4691f223814de55705439e57a291b6d0be325a2471d320916e8550c070b9",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/src/osef/runner.py",
+      "source": "openclaw-security-eval-v2/src/osef/runner.py",
+      "source_sha256": "04b8f3b55a4d5525f7a3ec6774e5c310352f11a29382b33ca35e1d1f6a7eb839",
+      "public_sha256": "04b8f3b55a4d5525f7a3ec6774e5c310352f11a29382b33ca35e1d1f6a7eb839",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/tests/test_analysis.py",
+      "source": "openclaw-security-eval-v2/tests/test_analysis.py",
+      "source_sha256": "20913f027aa1276bc621e72424e06a89ed29b84cb41f2830a3e724d46727608f",
+      "public_sha256": "20913f027aa1276bc621e72424e06a89ed29b84cb41f2830a3e724d46727608f",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/tests/test_client.py",
+      "source": "openclaw-security-eval-v2/tests/test_client.py",
+      "source_sha256": "198608f37a1090bc27eaf865d016d3a08a3cf582641bf0136f4887e9f9014cb1",
+      "public_sha256": "198608f37a1090bc27eaf865d016d3a08a3cf582641bf0136f4887e9f9014cb1",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/tests/test_files.py",
+      "source": "openclaw-security-eval-v2/tests/test_files.py",
+      "source_sha256": "b7ec0353f61eb7f0ac91e4cb52b5e28877626d6fbe8a7f89fcafbde43a7c11c5",
+      "public_sha256": "b7ec0353f61eb7f0ac91e4cb52b5e28877626d6fbe8a7f89fcafbde43a7c11c5",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/tests/test_project.py",
+      "source": "openclaw-security-eval-v2/tests/test_project.py",
+      "source_sha256": "a4b0f14e967ab41c35689f10283125028d32d9bcbd021fba6a4f141453a23d75",
+      "public_sha256": "a4b0f14e967ab41c35689f10283125028d32d9bcbd021fba6a4f141453a23d75",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/attacks/prompt_injection/PI001.json",
+      "source": "openclaw-security-eval-v2/attacks/prompt_injection/PI001.json",
+      "source_sha256": "3793d2b02a39add70ed1b7de1bfc3b576406265da472de6dfdf0d90342f402df",
+      "public_sha256": "3793d2b02a39add70ed1b7de1bfc3b576406265da472de6dfdf0d90342f402df",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/attacks/prompt_injection/PI002.json",
+      "source": "openclaw-security-eval-v2/attacks/prompt_injection/PI002.json",
+      "source_sha256": "efd59bfa3823c16589c2b82b29e42fde4c68c8a6944191dd0eb418e55abdcda1",
+      "public_sha256": "efd59bfa3823c16589c2b82b29e42fde4c68c8a6944191dd0eb418e55abdcda1",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/attacks/prompt_injection/PI003.json",
+      "source": "openclaw-security-eval-v2/attacks/prompt_injection/PI003.json",
+      "source_sha256": "6ede672d6f00bf4d6c6924df53e0906df942dd70532477fe0c90cf68b6bd233d",
+      "public_sha256": "6ede672d6f00bf4d6c6924df53e0906df942dd70532477fe0c90cf68b6bd233d",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/attacks/prompt_injection/PI004.json",
+      "source": "openclaw-security-eval-v2/attacks/prompt_injection/PI004.json",
+      "source_sha256": "f529ab08189e3fa8f4d2b9d0a165107a0c8bbf780a62be4326c4e1964c8f6f27",
+      "public_sha256": "f529ab08189e3fa8f4d2b9d0a165107a0c8bbf780a62be4326c4e1964c8f6f27",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/attacks/prompt_injection/PI005.json",
+      "source": "openclaw-security-eval-v2/attacks/prompt_injection/PI005.json",
+      "source_sha256": "4be303fbb75c63944fbe151efd2bb1ee08e4bac1ed1d3949d85be8675bd0cd7b",
+      "public_sha256": "4be303fbb75c63944fbe151efd2bb1ee08e4bac1ed1d3949d85be8675bd0cd7b",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/attacks/prompt_injection/PI006.json",
+      "source": "openclaw-security-eval-v2/attacks/prompt_injection/PI006.json",
+      "source_sha256": "c5f88965dc206443f0305e8236be80180720cd6c1133fae31029dc2f2c062544",
+      "public_sha256": "c5f88965dc206443f0305e8236be80180720cd6c1133fae31029dc2f2c062544",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/pyproject.toml",
+      "source": "openclaw-security-eval-v2/pyproject.toml",
+      "source_sha256": "f6a8489c3e1c0995b9c75282d9f547464f63a0840c34f4bd0deeb5be9886e8fd",
+      "public_sha256": "f6a8489c3e1c0995b9c75282d9f547464f63a0840c34f4bd0deeb5be9886e8fd",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/scripts/analyze_phase1.py",
+      "source": "openclaw-security-eval-v2/scripts/analyze_phase1.py",
+      "source_sha256": "be2bcbecb69ba1c44a3e43e610a498bd81a0a500db7ef050fb444a7a67fb8a84",
+      "public_sha256": "33ecd862a8fbf8e334d188ff6a806a909688d7ba8a415d849b06e23d0c3cf1ca",
+      "transformation": "personal absolute path replaced with /path/to/researcher"
+    },
+    {
+      "path": "experiments/prompt-injection/baseline/workspace/README.txt",
+      "source": "openclaw-security-eval-v2/baseline/workspace/README.txt",
+      "source_sha256": "4bc96ea7d77c224a99a45b76a836d92d0e1664778446d5409399d39b6241c612",
+      "public_sha256": "4bc96ea7d77c224a99a45b76a836d92d0e1664778446d5409399d39b6241c612",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/agent-misoperation/benchmark.py",
+      "source": "openclaw_misoperation_benchmark/benchmark.py",
+      "source_sha256": "072a982553d2537b72d33fcda48e7ee46e27936da2f3357c8afd7bcc9effe908",
+      "public_sha256": "072a982553d2537b72d33fcda48e7ee46e27936da2f3357c8afd7bcc9effe908",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/agent-misoperation/test_evaluator.py",
+      "source": "openclaw_misoperation_benchmark/test_evaluator.py",
+      "source_sha256": "d85313118b32e48d005c9dcfef006179db22584b447ebe9366055b901bc266cb",
+      "public_sha256": "d85313118b32e48d005c9dcfef006179db22584b447ebe9366055b901bc266cb",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/agent-misoperation/prompts.json",
+      "source": "openclaw_misoperation_benchmark/prompts.json",
+      "source_sha256": "34233d2ba1b479aa6341a603c24da87e3e9e9f2f6e12e5f9df81b8760193a9ef",
+      "public_sha256": "34233d2ba1b479aa6341a603c24da87e3e9e9f2f6e12e5f9df81b8760193a9ef",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/early-defenses/run_all_defenses.py",
+      "source": "openclaw_defense_validation_suite/run_all_defenses.py",
+      "source_sha256": "78d524f0ae9ac24594a1d8478d8aa315150a0f27296163b962b9f84f7f288b02",
+      "public_sha256": "78d524f0ae9ac24594a1d8478d8aa315150a0f27296163b962b9f84f7f288b02",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/early-defenses/test_suite.py",
+      "source": "openclaw_defense_validation_suite/test_suite.py",
+      "source_sha256": "3a7d2cc55217e29477a2b385598675c38ede5687ae5e753a0359ce7774ef04c5",
+      "public_sha256": "3a7d2cc55217e29477a2b385598675c38ede5687ae5e753a0359ce7774ef04c5",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/early-defenses/prompts.json",
+      "source": "openclaw_defense_validation_suite/prompts.json",
+      "source_sha256": "d3ddb3519abc9b4fb065027f244775f999c06040598f9ca8c755e54f571cf004",
+      "public_sha256": "d3ddb3519abc9b4fb065027f244775f999c06040598f9ca8c755e54f571cf004",
+      "transformation": "byte-identical copy"
+    },
+    {
+      "path": "experiments/prompt-injection/results.public.csv",
+      "source": "openclaw-security-eval-v2/analysis/experiment_summary.csv",
+      "source_sha256": "d649b3f248afe8a929a4ac1c338b496fd4923298d7562cad02c247220a30e298",
+      "public_sha256": "e17a2167e5ae29eb95741547f0072724778e164bac5762781555b6c4bb1b40a9",
+      "transformation": "column projection; omitted: experiment_id, attack_name, category, session_key, started_at, duration_seconds, response_text, tools_used, sensitive_path_mentioned, canary_mentioned, files_added, files_modified, files_deleted, result_dir"
+    },
+    {
+      "path": "experiments/agent-misoperation/results.public.csv",
+      "source": "openclaw-lab/benchmark_runs/_results/results_v2.csv",
+      "source_sha256": "542b2f347f2628b3f82ba18c7c6d8fc610a8a1bda83f3c71029610b3e42ba5e4",
+      "public_sha256": "773256c223c25a4f7ee9a438d96a67f9560fe614ee450e2fb0accffe29b94bbf",
+      "transformation": "column projection; omitted: protected_damage, changed, deleted, created, dangerous_markers, stdout, stderr"
+    },
+    {
+      "path": "experiments/early-defenses/results.public.csv",
+      "source": "openclaw_defense_validation_suite/defense_results/results.csv",
+      "source_sha256": "4074cff453f6be79ca776330fc577f9f96d99bad864e4ee266e4417fbf17d4e9",
+      "public_sha256": "d4056554f0d084009c93da0f528610bb35c48c776161c33bd41eb43d73943a49",
+      "transformation": "column projection; omitted: reason, changed_files, stdout_excerpt, stderr_excerpt"
+    },
+    {
+      "path": "experiments/early-defenses/historical-summary.json",
+      "source": "openclaw_defense_validation_suite/defense_results/summary.json",
+      "source_sha256": "15d3ce9b00a9d778b900eea005984ba37661f83885c9abd7ac53890ed0f5d71a",
+      "public_sha256": "15d3ce9b00a9d778b900eea005984ba37661f83885c9abd7ac53890ed0f5d71a",
+      "transformation": "byte-identical copy"
+    }
+  ]
+}

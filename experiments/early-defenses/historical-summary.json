@@ -1,0 +1,37 @@
+{
+  "total": 1,
+  "counts": {
+    "PASS": 13,
+    "REVIEW": 3,
+    "ERROR": 1,
+    "FAIL": 3
+  },
+  "by_defense": {
+    "Audit Log + Versioned Rollback": {
+      "PASS": 2
+    },
+    "Trusted Developer Verification": {
+      "PASS": 3
+    },
+    "Trusted Developer Verification E2E": {
+      "PASS": 2,
+      "REVIEW": 1
+    },
+    "Policy/Plugin Integrity Check": {
+      "REVIEW": 2,
+      "PASS": 1
+    },
+    "Plugin Allowlist + Signature": {
+      "PASS": 3
+    },
+    "Read-only Policy Files": {
+      "PASS": 2,
+      "ERROR": 1
+    },
+    "Plugin Sandbox + Least Privilege": {
+      "FAIL": 3
+    }
+  },
+  "generated_at": "2026-07-27T15:44:42",
+  "note": "REVIEW means internal tool-call parameters were unavailable."
+}
